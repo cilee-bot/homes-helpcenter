@@ -812,10 +812,19 @@ const KBStorage = {
   _sb: null,                       // Supabase 클라이언트
   _cache: null,                    // 메모리 캐시
 
+  // 기본 Supabase 설정 (배포 환경 자동 연결용)
+  DEFAULT_SB: {
+    url: 'https://bqzzszmhzfkcbgoyavcn.supabase.co',
+    key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJxenpzem1oemZrY2Jnb3lhdmNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5ODU2NTAsImV4cCI6MjA4OTU2MTY1MH0.ScflftO0AwvhfKvr77JuxM4-QEaaLJJNZ-OTYHPU_3Q'
+  },
+
   // ── Supabase 초기화 ──
   initSupabase() {
     try {
-      const cfg = JSON.parse(localStorage.getItem(this.SB_CFG_KEY) || '{}');
+      // 1) localStorage 설정 우선
+      let cfg = JSON.parse(localStorage.getItem(this.SB_CFG_KEY) || '{}');
+      // 2) 없으면 기본값 사용
+      if (!cfg.url || !cfg.key) cfg = this.DEFAULT_SB;
       if (!cfg.url || !cfg.key) return false;
       const lib = window.supabase || window.Supabase;
       if (!lib || !lib.createClient) return false;
